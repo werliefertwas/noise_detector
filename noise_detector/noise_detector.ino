@@ -13,7 +13,7 @@ int relayPin = 5;
 
 // Analog Input
 const int lightSensorPin = 1;
-const int OFFSET = 450;
+const int LIGHTSENSOR_OFFSET = 450;
 
 const int noiseMeanValue = 620;
 
@@ -78,17 +78,13 @@ void setup() {
   dataPushTimer.setInterval(dataPrintInterval, printData);
 }
 
-void readNoiseValue() {
-  noiseSensorValue = analogRead(noiseSensorPin);
-}
-
 void loop() {
   // read the sensor and store it in the variable noiseSensorValue:
-  readNoiseValue();
+  noiseSensorValue = analogRead(noiseSensorPin);
   lightSensorValue = analogRead(lightSensorPin);
 
-  int barGraphValue = abs(noiseSensorValue - noiseMeanValue);
-  if (barGraphValue > 0) { barGraphValue /= 10; }
+  int barGraphValue = lightSensorValue - LIGHTSENSOR_OFFSET;
+  if (barGraphValue > 0) { barGraphValue /= 70; }
   else { barGraphValue = 0; }
 
   matrix_push(barGraphValue);
