@@ -2,14 +2,25 @@
 
 //    MAX7219_8x8_matrix(DIN, CS, CLK);
 MAX7219_8x8_matrix LEDmatrix(2,3,4);
-int relayPin = 5;
-int i = 0;
-int delay_time = 20;  //ms
-int m[8] = {1,1,1,1,1,1,1,1};
-const int sensorPin = 0;
-const int offset = 120;
-int level;
+const int DELAY_TIME = 20;  //ms
+int matrix[8] = {0,0,0,0,0,0,0,0};
 
+// Relay Output
+int relayPin = 5;
+
+// Analog Input
+const int sensorPin = 0;
+const int OFFSET = 120;
+
+/*
+  Generate a bitmask for the given input for the led column.
+  All leds up to the given value will be turned on:
+  0 = B00000000
+  1 = B00000001
+  2 = B00000011
+  7 = B01111111
+  8 = B11111111
+*/
 int set_leds(int input) {
   int ret = 0;
   for (int i=0; i<8; i++) {
@@ -18,40 +29,63 @@ int set_leds(int input) {
   return ret;
 }
 
+/*
+  Write all eight columns to the LED matrix.
+*/
 void output_matrix(void) {
   for (int col=0;col<8;col++){
-   LEDmatrix.set_col(col,set_leds(m[col]));
-   delay(delay_time);
+   LEDmatrix.set_col(col,set_leds(matrix[col]));
+   delay(DELAY_TIME);
   }
 }
 
+/*
+  Add a new value (0..8) to the output matrix.
+  Since performance is no problem yet, we simply shift the matrix
+  and add the new value to the first slot. As soon as performance 
+  becomes an issue, we should use a pointer here and dont copy all
+  values every time.
+*/
 void matrix_push(int val) {
   for (int i=7; i>0; i--) {
-    m[i] = m[i-1];
+    matrix[i] = matrix[i-1];
   }
-  m[0] = val;
+  matrix[0] = val;
 }
 
+/*
+  Setup does the following stuff:
+  * Init the relay output to OFF
+  * Init the analog measurement
+  * Init the LED Matrix with all leds turned off
+*/
 void setup() {
-  pinMode(sensorPin, INPUT);
-  pinMode(relayPin, OUTPUT);
+  pinMode(sensorPin, INPUT);      // Analog in for light measurement
+  pinMode(relayPin, OUTPUT);      // Digital out for relay module
   digitalWrite(relayPin, HIGH);
-
-  LEDmatrix.clear();
-  delay(1000);
+  LEDmatrix.clear();              // 8x8 LED matrix
   LEDmatrix.setBrightness(8);
-  randomSeed(6);
 }
 
+/*
+  loop does the folloiwing stuff:
+  * Read a new light value
+  * scale the value to 0..8
+  * Set the relay output: ON when measurement below threshold, OFF otherwise
+  * Push the new value to the matrix
+  * Print out the new matrix to the leds
+*/
 void loop() {
-  level = analogRead(sensorPin) - offset;
-  if (level > 0) { level /= 70; }
-  else { level = 0; }
+  int measurement;
 
-  if (level < 4) { digitalWrite(relayPin, HIGH); }
+  measurement = analogRead(sensorPin) - OFFSET;
+  if (measurement > 0) { measurement /= 70; }
+  else { measurement = 0; }
+
+  if (measurement < 4) { digitalWrite(relayPin, HIGH); }
   else { digitalWrite(relayPin, LOW); }
 
-  matrix_push(level);
+  matrix_push(measurement);
   output_matrix();
-  delay(delay_time);
+  delay(DELAY_TIME);
 }
