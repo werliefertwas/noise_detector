@@ -4,8 +4,10 @@
 MAX7219_8x8_matrix LEDmatrix(2,3,4);
 int i = 0;
 int delay_time = 20;  //ms
-int m[8] = {1,2,3,4,3,2,1,0};
+int m[8] = {1,1,1,1,1,1,1,1};
 int p = 0;
+
+
 int set_leds(int input) {
   int ret = 0;
   for (int i=0; i<8; i++) {
@@ -37,7 +39,7 @@ void setup() {
 
 void loop() {
   output_matrix();
-  delay(500);
+  delay(100);
   matrix_push(random(1,8));
 }
 
