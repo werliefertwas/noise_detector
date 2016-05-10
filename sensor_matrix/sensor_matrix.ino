@@ -2,10 +2,10 @@
 
 //    MAX7219_8x8_matrix(DIN, CS, CLK);
 MAX7219_8x8_matrix LEDmatrix(2,3,4);
+int relayPin = 5;
 int i = 0;
 int delay_time = 20;  //ms
 int m[8] = {1,1,1,1,1,1,1,1};
-int p = 0;
 const int sensorPin = 0;
 const int offset = 120;
 int level;
@@ -34,20 +34,24 @@ void matrix_push(int val) {
 
 void setup() {
   pinMode(sensorPin, INPUT);
+  pinMode(relayPin, OUTPUT);
+  digitalWrite(relayPin, HIGH);
+
   LEDmatrix.clear();
   delay(1000);
   LEDmatrix.setBrightness(8);
   randomSeed(6);
-  Serial.begin(9600);
 }
 
 void loop() {
   level = analogRead(sensorPin) - offset;
-  Serial.println(level);
-  if (level > 0) { matrix_push(level/70); }
-  else { matrix_push(0); }
+  if (level > 0) { level /= 70; }
+  else { level = 0; }
 
+  if (level < 4) { digitalWrite(relayPin, HIGH); }
+  else { digitalWrite(relayPin, LOW); }
+
+  matrix_push(level);
   output_matrix();
-
-  delay(100);
+  delay(delay_time);
 }
