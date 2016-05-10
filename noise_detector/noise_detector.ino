@@ -13,7 +13,7 @@ int relayPin = 5;
 
 // Analog Input
 const int lightSensorPin = 1;
-const int LIGHTSENSOR_OFFSET = 450;
+const int LIGHTSENSOR_OFFSET = 440;
 
 const int noiseMeanValue = 620;
 
@@ -86,6 +86,12 @@ void loop() {
   int barGraphValue = lightSensorValue - LIGHTSENSOR_OFFSET;
   if (barGraphValue > 0) { barGraphValue /= 70; }
   else { barGraphValue = 0; }
+
+  if (barGraphValue >= 8) {
+    digitalWrite(relayPin, LOW);
+  } else {
+    digitalWrite(relayPin, HIGH);
+  }
 
   matrix_push(barGraphValue);
   output_matrix();
