@@ -36,6 +36,7 @@ void pushData() {
   // connect to elixir server and deliver some data
   Process p;
   char command[500];
+  /*
   sprintf(
     command,
     "curl -k -H \"Content-Type: application/json\" -X POST -d '{\"event\": {\"label\":\"noise_level\",\"value\":\"%i\"}}' %s",
@@ -43,6 +44,7 @@ void pushData() {
     noiseApiUrl
   );
   p.runShellCommandAsynchronously(command);
+  */
 
   sprintf(
     command,
