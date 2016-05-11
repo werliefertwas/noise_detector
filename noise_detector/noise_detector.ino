@@ -13,7 +13,7 @@ int relayPin = 5;
 
 // Analog Input
 const int lightSensorPin = 1;
-const int LIGHTSENSOR_OFFSET = 440;
+const int LIGHTSENSOR_OFFSET = 420;
 
 const int noiseMeanValue = 620;
 
@@ -23,7 +23,7 @@ const int noiseSensorPin = 0;   // the microphone connection pin
 int noiseSensorValue = 0;      // variable to store the value read from the sensor pin
 int lightSensorValue = 0;
 
-const int dataUpdateInterval = 5000;
+const int dataUpdateInterval = 1000;
 const int dataPrintInterval = 500;
 
 const char *noiseApiUrl = "https://secure-spire-62884.herokuapp.com/api/events";
